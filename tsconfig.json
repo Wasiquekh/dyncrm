@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noEmit": true,
+    "incremental": true,
+    "module": "esnext",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+
+    // Add these two for FormData iteration support
+    "target": "ES2015", // Set to ES2015 or higher
+    "downlevelIteration": true, // Enable iteration over FormData entries
+
+    "plugins": [{ "name": "next" }],
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["*"],
+      "@/provider/*": ["provider/*"],
+      "@/component/*": ["app/component/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "app/leads/page.tsx",
+    "app/firebase-config.js"
+  ],
+  "exclude": ["node_modules"]
+}
