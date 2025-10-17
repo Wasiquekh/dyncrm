@@ -297,7 +297,7 @@ export default function Home() {
   const [data, setData] = useState<any>(null);
   const [isSendTemplate, setIsSendtTemplate] = useState<boolean>(false)
   const [templateData, setTemplateData] = useState<string[]>([])
-  console.log("++++++++++++++++++++++++++++++++++++++++",templateData)
+  console.log("++++++++++++++++++++++++++++++++++++++++",data)
     useEffect(() => {
       const fetchData = async () => {
         

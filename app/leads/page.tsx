@@ -215,7 +215,7 @@ export default function Home() {
   const [hitApi, setHitApi] = useState<boolean>(false);
   const [excelFile, setExcelFile] = useState<File | null>(null);
   const [editLeadData, setEditLeadData] = useState(null);
-  //console.log("555555555555555555555", editLeadData);
+  console.log("555555555555555555555", editLeadData);
   const [leadSourceData, setLeadSourceData] = useState<LeadSource[]>([]);
   const [consolidationData, setConsolidationData] = useState<Consolidation[]>(
     []
@@ -329,6 +329,7 @@ useEffect(() => {
   });
 
   const handleCreateLead = async (value: any) => {
+    //console.log("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",value)
     setIsLoading(true);
     // setIsFilter(false);
     setFlyoutOpen(false);
@@ -346,7 +347,7 @@ useEffect(() => {
       setIsLoading(false);
     }
   };
-  const handleUpdateLead = async (value: CreateLead) => {
+  const handleUpdateLead = async (value: any) => {
     setIsLoading(true);
     // setIsFilter(false);
     setFlyoutOpen(false);
@@ -466,7 +467,7 @@ useEffect(() => {
     setIsAgent(false);
      setIsagentBulkCehckAssign(false)
   };
-  const editLead = (editData: CreateLead) => {
+  const editLead = (editData: any) => {
     setEditLeadData(editData);
     setFlyoutOpen(true);
     setIsEditLead(true);
@@ -2167,219 +2168,199 @@ const status = [
   </div>
   <div className="w-full border-b border-gray-700 mb-4"></div>
 
-  <Formik
-    enableReinitialize
-    initialValues={{
-      id: editLeadData?.id ?? "",
-      full_name: editLeadData?.full_name ?? "",
-      email: editLeadData?.email ?? "",
-      phone: editLeadData?.phone ?? "",
-      whatsapp_number: editLeadData?.whatsapp_number ?? "",
-      address_line1: editLeadData?.address?.line1 ?? "",
-      address_line2: editLeadData?.address?.line2 ?? "",
-      city: editLeadData?.address?.city ?? "",
-      state: editLeadData?.address?.state ?? "",
-      postal_code: editLeadData?.address?.postal_code ?? "",
-      country: editLeadData?.address?.country ?? "",
-      lead_score:
-        typeof editLeadData?.lead_score === "number"
-          ? editLeadData.lead_score
-          : undefined,
-      lead_quality: editLeadData?.lead_quality ?? "",
-      best_time_to_call: editLeadData?.best_time_to_call ?? "",
-      lead_source_id: "",
-      debt_consolidation_status_id: "",
-      consolidated_credit_status_id: "",
-    }}
-    validationSchema={LeadSchema}
-    onSubmit={(values, { setSubmitting, resetForm }) => {
-      const value: CreateLead = {
-        id: values.id,
-        full_name: values.full_name,
-        email: values.email,
-        phone: values.phone || undefined,
-        whatsapp_number: values.whatsapp_number || undefined,
-        address_line1: values.address_line1 || undefined,
-        address_line2: values.address_line2 || undefined,
-        city: values.city || undefined,
-        state: values.state || undefined,
-        postal_code: values.postal_code || undefined,
-        country: values.country || undefined,
-        lead_score: values.lead_score ?? undefined,
-        lead_quality: values.lead_quality || undefined,
-        best_time_to_call: values.best_time_to_call || undefined,
-        lead_source_id: values.lead_source_id || undefined,
-        debt_consolidation_status_id:
-          values.debt_consolidation_status_id || undefined,
-        consolidated_credit_status_id:
-          values.consolidated_credit_status_id || undefined,
-      };
+<Formik
+  enableReinitialize
+  initialValues={{
+    id: editLeadData?.id ?? "",
+    full_name: editLeadData?.full_name ?? "",
+    email: editLeadData?.email ?? "",
+    phone: editLeadData?.phone ?? "",
+    whatsapp_number: editLeadData?.whatsapp_number ?? "",
+    address_line1: editLeadData?.address?.line1 ?? "",
+    address_line2: editLeadData?.address?.line2 ?? "",
+    city: editLeadData?.address?.city ?? "",
+    state: editLeadData?.address?.state ?? "",
+    postal_code: editLeadData?.address?.postal_code ?? "",
+    country: editLeadData?.address?.country ?? "",
+    lead_score:
+      typeof editLeadData?.lead_score === "number"
+        ? editLeadData.lead_score
+        : undefined,
+    lead_quality: editLeadData?.lead_quality ?? "",
+    best_time_to_call: editLeadData?.best_time_to_call ?? "",
+    lead_source_id: "",
+    status: "", // Add status field to handle dropdown
+  }}
+  validationSchema={LeadSchema}
+  onSubmit={(values, { setSubmitting, resetForm }) => {
+    const value: any = {
+      id: values.id,
+      full_name: values.full_name,
+      email: values.email,
+      phone: values.phone || undefined,
+      whatsapp_number: values.whatsapp_number || undefined,
+      address_line1: values.address_line1 || undefined,
+      address_line2: values.address_line2 || undefined,
+      city: values.city || undefined,
+      state: values.state || undefined,
+      postal_code: values.postal_code || undefined,
+      country: values.country || undefined,
+      lead_score: values.lead_score ?? undefined,
+      lead_quality: values.lead_quality || undefined,
+      best_time_to_call: values.best_time_to_call || undefined,
+      lead_source_id: values.lead_source_id || undefined,
+      status: values.status || undefined, // Added status field
+    };
 
-      handleUpdateLead(value);
-      setSubmitting(false);
-      resetForm();
-    }}
-  >
-    {({ handleSubmit, values, setFieldValue, setFieldTouched, isSubmitting }) =>
-      (() => {
-        const norm = (v: any) => String(v ?? "").toLowerCase();
+    handleUpdateLead(value);
+    setSubmitting(false);
+    resetForm();
+  }}
+>
+  {({ handleSubmit, values, setFieldValue, setFieldTouched, isSubmitting }) => {
+    const norm = (v: any) => String(v ?? "").toLowerCase();
 
-        // Prefill dropdown displays
-        const leadSourcePrefill = editLeadData?.lead_source;
-        const leadSourceDisplay = values.lead_source_id
-          ? (leadSourceData || []).find(
-              (o: any) => norm(o.id) === norm(values.lead_source_id)
-            ) || null
-          : (leadSourceData || []).find(
-              (o: any) =>
-                norm(o.id) ===
-                  norm((leadSourcePrefill as any)?.id ?? leadSourcePrefill) ||
-                norm(o.name) ===
-                  norm((leadSourcePrefill as any)?.name ?? leadSourcePrefill)
-            ) || null;
+    // Prefill dropdown displays
+    const leadSourcePrefill = editLeadData?.lead_source;
+    const leadSourceDisplay = values.lead_source_id
+      ? (leadSourceData || []).find(
+          (o: any) => norm(o.id) === norm(values.lead_source_id)
+        ) || null
+      : (leadSourceData || []).find(
+          (o: any) =>
+            norm(o.id) ===
+              norm((leadSourcePrefill as any)?.id ?? leadSourcePrefill) ||
+            norm(o.name) ===
+              norm((leadSourcePrefill as any)?.name ?? leadSourcePrefill)
+        ) || null;
 
-        const debtPrefill = editLeadData?.debt_consolidation_status;
-        const debtDisplay = values.debt_consolidation_status_id
-          ? (debtConsolidation || []).find(
-              (o: any) =>
-                norm(o.id) === norm(values.debt_consolidation_status_id)
-            ) || null
-          : (debtConsolidation || []).find(
-              (o: any) =>
-                norm(o.id) === norm((debtPrefill as any)?.id ?? debtPrefill) ||
-                norm(o.name) === norm((debtPrefill as any)?.name ?? debtPrefill)
-            ) || null;
+    const statusPrefill = editLeadData?.status; // Prefill status
+    const statusDisplay = values.status
+      ? (status || []).find((o: any) => norm(o.id) === norm(values.status)) ||
+        null
+      : (status || []).find(
+          (o: any) =>
+            norm(o.id) === norm((statusPrefill as any)?.id ?? statusPrefill) ||
+            norm(o.name) === norm((statusPrefill as any)?.name ?? statusPrefill)
+        ) || null;
 
-        const creditPrefill = editLeadData?.consolidated_credit_status;
-        const creditDisplay = values.consolidated_credit_status_id
-          ? (consolidationData || []).find(
-              (o: any) =>
-                norm(o.id) === norm(values.consolidated_credit_status_id)
-            ) || null
-          : (consolidationData || []).find(
-              (o: any) =>
-                norm(o.id) === norm((creditPrefill as any)?.id ?? creditPrefill) ||
-                norm(o.name) === norm((creditPrefill as any)?.name ?? creditPrefill)
-            ) || null;
+    return (
+      <form onSubmit={handleSubmit}>
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          {/* Full Name */}
+          <div className="w-full">
+            <p className="text-white text-base leading-6 mb-2">Full Name</p>
+            <Field
+              type="text"
+              name="full_name"
+              placeholder="Alexandre Dumas"
+              className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
+            />
+          </div>
 
- 
-        return (
-          <form onSubmit={handleSubmit}>
-            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              {/* Full Name */}
-              <div className="w-full">
-                <p className="text-white text-base leading-6 mb-2">Full Name</p>
-                <Field
-                  type="text"
-                  name="full_name"
-                  placeholder="Alexandre Dumas"
-                  className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
-                />
-              </div>
+          {/* Email */}
+          <div className="w-full">
+            <p className="text-white text-base leading-6 mb-2">Email</p>
+            <Field
+              type="email"
+              name="email"
+              placeholder="alexandre@example.com"
+              className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
+            />
+          </div>
 
-              {/* Email */}
-              <div className="w-full">
-                <p className="text-white text-base leading-6 mb-2">Email</p>
-                <Field
-                  type="email"
-                  name="email"
-                  placeholder="alexandre@example.com"
-                  className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
-                />
-              </div>
+          {/* Phone */}
+          <div className="w-full">
+            <p className="text-white text-base leading-6 mb-2">Phone</p>
+            <Field
+              type="text"
+              name="phone"
+              placeholder="+91 9XXXXXXXXX"
+              className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
+            />
+          </div>
 
-              {/* Phone */}
-              <div className="w-full">
-                <p className="text-white text-base leading-6 mb-2">Phone</p>
-                <Field
-                  type="text"
-                  name="phone"
-                  placeholder="+91 9XXXXXXXXX"
-                  className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
-                />
-              </div>
+          {/* WhatsApp Number */}
+          <div className="w-full">
+            <p className="text-white text-base leading-6 mb-2">WhatsApp Number</p>
+            <Field
+              type="text"
+              name="whatsapp_number"
+              placeholder="+91 9XXXXXXXXX"
+              className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
+            />
+          </div>
 
-              {/* WhatsApp Number */}
-              <div className="w-full">
-                <p className="text-white text-base leading-6 mb-2">WhatsApp Number</p>
-                <Field
-                  type="text"
-                  name="whatsapp_number"
-                  placeholder="+91 9XXXXXXXXX"
-                  className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
-                />
-              </div>
+          {/* Company */}
+          <div className="w-full">
+            <p className="text-white text-base leading-6 mb-2">Company</p>
+            <Field
+              type="text"
+              name="company"
+              placeholder="Enter Company Name"
+              className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
+            />
+          </div>
 
-              {/* Address Line 1 */}
-              <div className="w-full">
-                <p className="text-white text-base leading-6 mb-2">Address Line 1</p>
-                <Field
-                  type="text"
-                  name="address_line1"
-                  placeholder="Street, House no."
-                  className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
-                />
-              </div>
+          {/* Address Line 1 */}
+          <div className="w-full">
+            <p className="text-white text-base leading-6 mb-2">Address Line 1</p>
+            <Field
+              type="text"
+              name="address_line1"
+              placeholder="Street, House no."
+              className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
+            />
+          </div>
 
-              {/* State */}
-              <div className="w-full">
-                <p className="text-white text-base leading-6 mb-2">State</p>
-                <Field
-                  type="text"
-                  name="state"
-                  placeholder="Maharashtra"
-                  className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
-                />
-              </div>
+          {/* State */}
+          <div className="w-full">
+            <p className="text-white text-base leading-6 mb-2">State</p>
+            <Field
+              type="text"
+              name="state"
+              placeholder="Maharashtra"
+              className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
+            />
+          </div>
 
-              {/* Postal Code */}
-              <div className="w-full">
-                <p className="text-white text-base leading-6 mb-2">Postal Code</p>
-                <Field
-                  type="text"
-                  name="postal_code"
-                  placeholder="400071"
-                  className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
-                />
-              </div>
+          {/* Postal Code */}
+          <div className="w-full">
+            <p className="text-white text-base leading-6 mb-2">Postal Code</p>
+            <Field
+              type="text"
+              name="postal_code"
+              placeholder="400071"
+              className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
+            />
+          </div>
 
-              {/* Lead Score */}
-              <div className="w-full">
-                <p className="text-white text-base leading-6 mb-2">Lead Score</p>
-                <Field
-                  type="number"
-                  name="lead_score"
-                  placeholder="e.g., 75"
-                  className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
-                />
-              </div>
+          {/* Best Time to Call */}
+          <div className="w-full">
+            <p className="text-white text-base leading-6 mb-2">Best Time to Call</p>
+            <Field
+              type="text"
+              name="best_time_to_call"
+              placeholder="e.g., 3–5 PM"
+              className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
+            />
+          </div>
 
-              {/* Best Time to Call */}
-              <div className="w-full">
-                <p className="text-white text-base leading-6 mb-2">Best Time to Call</p>
-                <Field
-                  type="text"
-                  name="best_time_to_call"
-                  placeholder="e.g., 3–5 PM"
-                  className="w-full border border-[#444] rounded-[4px] py-4 px-4 text-white bg-black placeholder-gray-400"
-                />
-              </div>
-
-              {/* Lead Source Dropdown */}
-              <div className="w-full">
-                <p className="text-white text-base leading-6 mb-2">Lead Source</p>
-<Select
-  value={leadSourceDisplay}
-  onChange={(selected: any) =>
-    setFieldValue("lead_source_id", selected ? selected.id : "")
-  }
-  onBlur={() => setFieldTouched("lead_source_id", true)}
-  getOptionLabel={(opt: any) => opt.name}
-  getOptionValue={(opt: any) => String(opt.id)}
-  options={leadSourceData}
-  placeholder="Select Lead Source"
-  isClearable
-                classNames={{
+          {/* Lead Source Dropdown */}
+          <div className="w-full">
+            <p className="text-white text-base leading-6 mb-2">Lead Source</p>
+            <Select
+              value={leadSourceDisplay}
+              onChange={(selected: any) =>
+                setFieldValue("lead_source_id", selected ? selected.id : "")
+              }
+              onBlur={() => setFieldTouched("lead_source_id", true)}
+              getOptionLabel={(opt: any) => opt.name}
+              getOptionValue={(opt: any) => String(opt.id)}
+              options={leadSourceData}
+              placeholder="Select Lead Source"
+              isClearable
+              classNames={{
                 control: ({ isFocused }: any) =>
                   `onHoverBoxShadow !w-full !border-[0.4px] !rounded-[4px] !text-sm !leading-4 !font-medium !py-1.5 !px-1 !bg-black !shadow-sm ${
                     isFocused ? "!border-primary-500" : "!border-gray-700"
@@ -2397,25 +2378,24 @@ const status = [
                 input: (base) => ({ ...base, color: "#fff" }),
                 placeholder: (base) => ({ ...base, color: "#aaa" }),
               }}
-/>
+            />
+          </div>
 
-              </div>
-
-              {/* Debt Consolidation Status Dropdown */}
-              <div className="w-full">
-                <p className="text-white text-base leading-6 mb-2">Debt Consolidation Status</p>
-                <Select
-                  value={debtDisplay}
-                  onChange={(selected: any) =>
-                    setFieldValue("debt_consolidation_status_id", selected ? selected.id : "")
-                  }
-                  onBlur={() => setFieldTouched("debt_consolidation_status_id", true)}
-                  getOptionLabel={(opt: any) => opt.name}
-                  getOptionValue={(opt: any) => String(opt.id)}
-                  options={debtConsolidation}
-                  placeholder="Select Debt Consolidation Status"
-                  isClearable
-                                  classNames={{
+          {/* Status Dropdown */}
+          <div className="w-full">
+            <p className="text-white text-base leading-6 mb-2">Status</p>
+            <Select
+              value={statusDisplay}
+              onChange={(selected: any) =>
+                setFieldValue("status", selected ? selected.id : "")
+              }
+              onBlur={() => setFieldTouched("status", true)}
+              getOptionLabel={(opt: any) => opt.name}
+              getOptionValue={(opt: any) => String(opt.id)}
+              options={status} // Pass the options for the Status dropdown
+              placeholder="Select Status"
+              isClearable
+              classNames={{
                 control: ({ isFocused }: any) =>
                   `onHoverBoxShadow !w-full !border-[0.4px] !rounded-[4px] !text-sm !leading-4 !font-medium !py-1.5 !px-1 !bg-black !shadow-sm ${
                     isFocused ? "!border-primary-500" : "!border-gray-700"
@@ -2433,58 +2413,23 @@ const status = [
                 input: (base) => ({ ...base, color: "#fff" }),
                 placeholder: (base) => ({ ...base, color: "#aaa" }),
               }}
-                />
-              </div>
+            />
+          </div>
+        </div>
 
-              {/* Consolidated Credit Status Dropdown */}
-              <div className="w-full">
-                <p className="text-white text-base leading-6 mb-2">Consolidated Credit Status</p>
-                <Select
-                  value={creditDisplay}
-                  onChange={(selected: any) =>
-                    setFieldValue("consolidated_credit_status_id", selected ? selected.id : "")
-                  }
-                  onBlur={() => setFieldTouched("consolidated_credit_status_id", true)}
-                  getOptionLabel={(opt: any) => opt.name}
-                  getOptionValue={(opt: any) => String(opt.id)}
-                  options={consolidationData}
-                  placeholder="Select Consolidated Credit Status"
-                  isClearable
-                                  classNames={{
-                control: ({ isFocused }: any) =>
-                  `onHoverBoxShadow !w-full !border-[0.4px] !rounded-[4px] !text-sm !leading-4 !font-medium !py-1.5 !px-1 !bg-black !shadow-sm ${
-                    isFocused ? "!border-primary-500" : "!border-gray-700"
-                  }`,
-              }}
-              styles={{
-                menu: (base) => ({ ...base, borderRadius: 4, backgroundColor: "#000" }),
-                option: (base, { isFocused, isSelected }) => ({
-                  ...base,
-                  backgroundColor: isSelected ? "var(--primary-600)" : isFocused ? "#222" : "#000",
-                  color: "#fff",
-                  cursor: "pointer",
-                }),
-                singleValue: (base) => ({ ...base, color: "#fff" }),
-                input: (base) => ({ ...base, color: "#fff" }),
-                placeholder: (base) => ({ ...base, color: "#aaa" }),
-              }}
-                />
-              </div>
-            </div>
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="py-[13px] px-[26px] bg-primary-500 rounded-[4px] text-base font-medium leading-6 text-white hover:text-dark cursor-pointer w-full text-center hover:bg-primary-700 hover:text-white"
+        >
+          Update Leads
+        </button>
+      </form>
+    );
+  }}
+</Formik>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="py-[13px] px-[26px] bg-primary-500 rounded-[4px] text-base font-medium leading-6 text-white hover:text-dark cursor-pointer w-full text-center hover:bg-primary-700 hover:text-white"
-            >
-              Update Leads
-            </button>
-          </form>
-        );
-      })()
-    }
-  </Formik>
 </div>
 
 
