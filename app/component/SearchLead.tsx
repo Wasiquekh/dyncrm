@@ -277,37 +277,18 @@ const SearchLead: React.FC<SearchLeadProps> = ({
             </div>
 
             {/* Province / State */}
-            <div>
-              <p className="text-white mb-2">Province</p>
-              <Select
-                value={provinceOptions.find((opt) => opt.id === values.state) || null}
-                onChange={(selected: any) => setFieldValue("state", selected ? selected.id : "")}
-                onBlur={() => setFieldTouched("state", true)}
-                getOptionLabel={(opt: any) => opt.name}
-                getOptionValue={(opt: any) => opt.id}
-                options={provinceOptions}
-                placeholder="Select Province"
-                isClearable
-                classNames={{
-                control: ({ isFocused }: any) =>
-                  `onHoverBoxShadow !w-full !border-[0.4px] !rounded-[4px] !text-sm !leading-4 !font-medium !py-1.5 !px-1 !bg-black !shadow-sm ${
-                    isFocused ? "!border-primary-500" : "!border-gray-700"
-                  }`,
-              }}
-              styles={{
-                menu: (base) => ({ ...base, borderRadius: 4, backgroundColor: "#000" }),
-                option: (base, { isFocused, isSelected }) => ({
-                  ...base,
-                  backgroundColor: isSelected ? "var(--primary-600)" : isFocused ? "#222" : "#000",
-                  color: "#fff",
-                  cursor: "pointer",
-                }),
-                singleValue: (base) => ({ ...base, color: "#fff" }),
-                input: (base) => ({ ...base, color: "#fff" }),
-                placeholder: (base) => ({ ...base, color: "#aaa" }),
-              }}
-              />
-            </div>
+{/* Province / State (Text Input) */}
+<div>
+  <p className="text-white mb-2">Province / State</p>
+  <Field
+    type="text"
+    name="state"
+    placeholder="Enter province/state"
+    className="w-full border border-gray-700 rounded-[4px] bg-black text-white text-sm px-4 py-3"
+    onBlur={() => setFieldTouched("state", true)}
+  />
+</div>
+
 
             {/* Lead Source */}
             <div>

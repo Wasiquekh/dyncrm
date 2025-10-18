@@ -234,11 +234,11 @@ export default function Home() {
             <>
               <table className="w-full text-sm text-left text-white  mt-6">
                 <thead className="text-xs text-[#999999] talbleheaderBg">
-                  <tr className="border border-tableBorder">
+                  <tr className="  ">
                     {/* Full Name */}
                     <th
                       scope="col"
-                      className="px-3 py-3 md:p-3 border border-tableBorder"
+                      className="px-3 py-3 md:p-3   "
                     >
                       <div className="flex items-center gap-2">
                         <RxAvatar className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
@@ -251,7 +251,7 @@ export default function Home() {
                     {/* Email */}
                     <th
                       scope="col"
-                      className="px-3 py-2 border border-tableBorder hidden md:table-cell"
+                      className="px-3 py-2  hidden md:table-cell"
                     >
                       <div className="flex items-center gap-2">
                         <IoMailOpenOutline className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
@@ -264,7 +264,7 @@ export default function Home() {
                     {/* Phone */}
                     <th
                       scope="col"
-                      className="px-3 py-2 border border-tableBorder hidden md:table-cell"
+                      className="px-3 py-2  hidden md:table-cell"
                     >
                       <div className="flex items-center gap-2">
                         <MdOutlinePhone className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
@@ -277,7 +277,7 @@ export default function Home() {
                     {/* Address */}
                     <th
                       scope="col"
-                      className="px-3 py-2 border border-tableBorder hidden md:table-cell"
+                      className="px-3 py-2  hidden md:table-cell"
                     >
                       <div className="flex items-center gap-2">
                         <MdOutlineLocationCity className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
@@ -290,7 +290,7 @@ export default function Home() {
                     {/* Agent */}
                     <th
                       scope="col"
-                      className="px-3 py-2 border border-tableBorder hidden md:table-cell"
+                      className="px-3 py-2  hidden md:table-cell"
                     >
                       <div className="flex items-center gap-2">
                         <ImUserTie className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
@@ -306,7 +306,7 @@ export default function Home() {
                   {searcheddata.map((item: any, index: number) => (
                     <tr
                       key={item?.id ?? index}
-                      className="border border-tableBorder  hover:bg-primary-700 odd:bg-[#404040]"
+                      className="  hover:bg-primary-700 odd:bg-[#404040] border-b border-[#E7E7E7]"
                     >
                       {/* Full name */}
                       <td
@@ -319,28 +319,28 @@ export default function Home() {
                       </td>
 
                       {/* Email */}
-                      <td className="px-3 py-2 border border-tableBorder hidden md:table-cell">
+                      <td className="px-3 py-2  hidden md:table-cell">
                         <span className="text-white text-sm sm:text-base">
                           {item?.email ?? "-"}
                         </span>
                       </td>
 
                       {/* Phone */}
-                      <td className="px-3 py-2 border border-tableBorder hidden md:table-cell">
+                      <td className="px-3 py-2  hidden md:table-cell">
                         <span className="text-white text-sm sm:text-base">
                           {item?.phone ?? "-"}
                         </span>
                       </td>
 
                       {/* Address (country) */}
-                      <td className="px-3 py-2 border border-tableBorder hidden md:table-cell">
+                      <td className="px-3 py-2  hidden md:table-cell">
                         <span className="text-white text-sm sm:text-base capitalize">
-                          {item?.address?.country ?? "-"}
+                          {item?.address?.line1 ?? "-"}
                         </span>
                       </td>
 
                       {/* Agent */}
-                      <td className="px-3 py-2 border border-tableBorder hidden md:table-cell">
+                      <td className="px-3 py-2  hidden md:table-cell">
                         <span className="text-white text-sm sm:text-base capitalize">
                           {item?.agent?.name ?? "-"}
                         </span>

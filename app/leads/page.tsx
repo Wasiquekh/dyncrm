@@ -330,6 +330,7 @@ useEffect(() => {
 
   const handleCreateLead = async (value: any) => {
     //console.log("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",value)
+    //return;
     setIsLoading(true);
     // setIsFilter(false);
     setFlyoutOpen(false);
@@ -348,20 +349,21 @@ useEffect(() => {
     }
   };
   const handleUpdateLead = async (value: any) => {
-    setIsLoading(true);
+   // setIsLoading(true);
     // setIsFilter(false);
     setFlyoutOpen(false);
     console.log("@@@@@@@@@@@@@", value);
 
     try {
       await AxiosProvider.post("/leads/update", value);
-      toast.success("Lead is Updated");
+      toast.success("Lead is updated")
       setHitApi(!hitApi);
     } catch (error: any) {
       toast.error("Lead is not Updated");
-    } finally {
-      setIsLoading(false);
-    }
+    } 
+    // finally {
+    //   setIsLoading(false);
+    // }
   };
   const handleUploadFile = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -1186,7 +1188,7 @@ useEffect(() => {
                     {/* Owner */}
                     <td className="px-3 py-2   hidden md:table-cell">
                       <span className="text-white text-sm sm:text-base capitalize">
-                        {item?.address.country ?? "-"}
+                        {item?.address.line1 ?? "-"}
                       </span>
                     </td>
 
