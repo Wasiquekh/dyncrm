@@ -293,40 +293,59 @@ useEffect(() => {
     // console.log('Object customer data',customer.id)
     router.push(`/leadsdetails?id=${customer.id}`);
   };
-  const LeadSchema = Yup.object({
-    full_name: Yup.string().trim().required("Full name is required"),
-    email: Yup.string()
-      .trim()
-      .email("Enter a valid email")
-      .required("Email is required"),
-    phone: Yup.string()
-      .trim()
-      .required("Phone number is required")
-      .matches(
-        /^(\+91)?[6-9][0-9]{9}$/,
-        "Enter a valid phone number (with or without +91)"
-      ),
+// Normalize helpers
+const normalizePhone = (s?: string) => (s ?? "").replace(/[\s-]/g, "");
 
-    address_line1: Yup.string().nullable().notRequired(),
-    address_line2: Yup.string().nullable().notRequired(),
-    city: Yup.string().nullable().notRequired(),
-    state: Yup.string().nullable().notRequired(),
-    postal_code: Yup.string().nullable().notRequired(),
-    country: Yup.string().nullable().notRequired(),
+ const LeadSchema = Yup.object({
+  full_name: Yup.string().trim().required("Full name is required"),
 
-    lead_score: Yup.number()
-      .transform((v, o) => (o === "" ? undefined : v))
-      .typeError("Lead score must be a number")
-      .nullable()
-      .notRequired(),
+  email: Yup.string()
+    .trim()
+    .email("Enter a valid email")
+    .required("Email is required"),
 
-    lead_quality: Yup.string().nullable().notRequired(),
-    best_time_to_call: Yup.string().nullable().notRequired(),
+  // ✅ Accepts 10-digit Indian numbers with optional +91 / 91; ignores spaces/dashes
+  phone: Yup.string()
+    .transform((_v, orig) => normalizePhone(orig))
+    .required("Phone number is required")
+    .matches(
+      /^(\+?91)?[6-9]\d{9}$/,
+      "Enter a valid phone number (10 digits, optional +91)"
+    ),
 
-    // Optional dropdown: show name, store id (can be empty)
-    lead_source_id: Yup.string().nullable().notRequired(),
-    debt_consolidation_status_id: Yup.string().nullable().notRequired(),
-  });
+  // Optional WhatsApp number (same normalization). Remove if you don't use this field.
+  whatsapp_number: Yup.string()
+    .transform((_v, orig) => normalizePhone(orig))
+    .nullable()
+    .notRequired()
+    .test("whats-valid", "Enter a valid WhatsApp number", (val) => {
+      if (!val) return true; // optional
+      return /^(\+?91)?[6-9]\d{9}$/.test(val);
+    }),
+
+  address_line1: Yup.string().nullable().notRequired(),
+  address_line2: Yup.string().nullable().notRequired(),
+  city: Yup.string().nullable().notRequired(),
+  state: Yup.string().nullable().notRequired(),
+  postal_code: Yup.string().nullable().notRequired(),
+  country: Yup.string().nullable().notRequired(),
+
+  lead_score: Yup.number()
+    .transform((v, o) => (o === "" ? undefined : v))
+    .typeError("Lead score must be a number")
+    .nullable()
+    .notRequired(),
+
+  lead_quality: Yup.string().nullable().notRequired(),
+  best_time_to_call: Yup.string().nullable().notRequired(),
+
+  // Dropdowns (store id strings; allow empty)
+  lead_source_id: Yup.string().nullable().notRequired(),
+  debt_consolidation_status_id: Yup.string().nullable().notRequired(),
+
+  // If you have `status` in the edit/create forms, keep it optional:
+  status: Yup.string().nullable().notRequired(),
+});
 
   const handleCreateLead = async (value: any) => {
     //console.log("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",value)
@@ -352,7 +371,8 @@ useEffect(() => {
    // setIsLoading(true);
     // setIsFilter(false);
     setFlyoutOpen(false);
-    console.log("@@@@@@@@@@@@@", value);
+   // console.log("@@@@@@@@@@@@@", value);
+    //return;
 
     try {
       await AxiosProvider.post("/leads/update", value);

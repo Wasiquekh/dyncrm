@@ -2796,7 +2796,7 @@ setIsActivityHistoryPaination(true)
                       disabled={isSubmitting}
                       className="py-[13px] px-[26px] bg-primary-500 rounded-[4px] text-base font-medium leading-6 text-white hover:text-dark cursor-pointer w-full text-center hover:bg-primary-700"
                     >
-                      Update Lead Activity
+                      Update Activity History
                     </button>
                   </div>
                 </form>
