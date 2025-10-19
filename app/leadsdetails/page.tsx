@@ -2685,52 +2685,53 @@ setIsActivityHistoryPaination(true)
           <p className="text-white font-medium text-base leading-6 mb-2">
             Disposition
           </p>
-          <Select
-            value={
-              (disposition || []).find(
-                (opt: any) => String(opt.id) === String(values.disposition_id)
-              ) || null
-            }
-            onChange={(selectedOption: any) =>
-              setFieldValue(
-                "disposition_id",
-                selectedOption ? String(selectedOption.id) : ""
-              )
-              
-              
-            }
-            onBlur={() => setFieldTouched("disposition_id", true)}
-            getOptionLabel={(opt: any) => opt.name}
-            getOptionValue={(opt: any) => String(opt.id)}
-            options={disposition}
-            placeholder="Select Disposition"
-            isClearable
-            classNames={{
-              control: ({ isFocused }) =>
-                `!w-full !border-[0.4px] !rounded-[4px] !text-sm !leading-4 !font-medium !py-1.5 !px-1 !bg-black !shadow-sm ${
-                  isFocused ? "!border-primary-500" : "!border-gray-700"
-                }`,
-            }}
-            styles={{
-              menu: (base) => ({
-                ...base,
-                borderRadius: 4,
-                backgroundColor: "#000",
-              }),
-              option: (base, { isFocused, isSelected }) => ({
-                ...base,
-                backgroundColor: isSelected
-                  ? "var(--primary-500)"
-                  : isFocused
-                  ? "#222"
-                  : "#000",
-                color: "#fff",
-                cursor: "pointer",
-              }),
-              singleValue: (base) => ({ ...base, color: "#fff" }),
-              placeholder: (base) => ({ ...base, color: "#999" }),
-            }}
-          />
+      <Select
+  value={
+    (disposition || []).find(
+      (opt: any) => String(opt.id) === String(values.disposition_id)
+    ) || null
+  }
+  onChange={(selectedOption: any) => {
+    const id = selectedOption ? String(selectedOption.id) : "";
+    const name = selectedOption ? selectedOption.name : "";
+    setFieldValue("disposition_id", id);
+    setFieldValue(
+      "conversation",
+      selectedOption && DISPO_AUTOFILL.has(name)
+        ? name
+        : values.conversation // keep old text if not auto-fill
+    );
+  }}
+  onBlur={() => setFieldTouched("disposition_id", true)}
+  getOptionLabel={(opt: any) => opt.name}
+  getOptionValue={(opt: any) => String(opt.id)}
+  options={disposition}
+  placeholder="Select Disposition"
+  isClearable
+  classNames={{
+    control: ({ isFocused }: any) =>
+      `onHoverBoxShadow !w-full !border-[0.4px] !rounded-[4px] !text-sm !leading-4 !font-medium !py-1.5 !px-1 !bg-black !shadow-sm ${
+        isFocused ? "!border-primary-500" : "!border-gray-700"
+      }`,
+  }}
+  styles={{
+    menu: (base) => ({ ...base, borderRadius: 4, backgroundColor: "#000" }),
+    option: (base, { isFocused, isSelected }) => ({
+      ...base,
+      backgroundColor: isSelected
+        ? "var(--primary-500)"
+        : isFocused
+        ? "#222"
+        : "#000",
+      color: "#fff",
+      cursor: "pointer",
+    }),
+    singleValue: (base) => ({ ...base, color: "#fff" }),
+    input: (base) => ({ ...base, color: "#fff" }),
+    placeholder: (base) => ({ ...base, color: "#aaa" }),
+  }}
+/>
+
           {touched.disposition_id && errors.disposition_id && (
             <p className="text-red-500 absolute top-[85px] text-xs">
               {String(errors.disposition_id)}
