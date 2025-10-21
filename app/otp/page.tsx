@@ -89,7 +89,8 @@ export default function OtpHome() {
         if (isLogged) {
           try {
             const currentToken = await getToken(messaging, {
-              vapidKey: "YOUR_VAPID_KEY", // Replace with your actual VAPID Key
+              vapidKey:
+                "BPGmALJgnU2asXN4pqtYf85enB-Y3KbCkCwmSmxtSE3nWT69ghqbFAvIYxRsqntM6oR4jJTCpnpngmXIlJ7ik_k", // Replace with your actual VAPID Key
             });
 
             if (currentToken) {
