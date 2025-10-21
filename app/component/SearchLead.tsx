@@ -151,6 +151,18 @@ const SearchLead: React.FC<SearchLeadProps> = ({
 
   /** First search handler: emit filters to parent and let parent fetch page=1 */
   const performInitialSearch = async (payload: Record<string, any>) => {
+    // 🧩 check if all fields are empty
+    const allEmpty = Object.values(payload).every((val) => {
+      if (Array.isArray(val)) return val.length === 0;
+      if (val === null || val === undefined) return true;
+      return String(val).trim() === "";
+    });
+
+    if (allEmpty) {
+      toast.error("Min 1 field is required"); // 🔔 show toast message
+      return; // stop further execution
+    }
+
     try {
       setLoading(true);
 

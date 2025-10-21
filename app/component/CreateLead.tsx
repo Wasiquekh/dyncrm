@@ -109,8 +109,8 @@ const CreateLead: React.FC<CreateLeadProps> = ({ closeFlyOut }) => {
   // END FETCH
 
   const handleCreateLead = async (payload: any) => {
-    console.log("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",payload)
-    return;
+    // console.log("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",payload)
+    // return;
     try {
       await AxiosProvider.post("/leads", payload);
       toast.success("Lead is Created");
