@@ -8,7 +8,10 @@ import { messaging } from "./firebase-config";
 
 // The base URL should be configured using environment variables.
 const APP_BASE_URL =
-  process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000";
+  // process.env.NEXT_PUBLIC_APP_BASE_URL || "http://localhost:3000";
+  process.env.NEXT_PUBLIC_APP_BASE_URL ||
+  " https://main.d3at4891k8lx4d.amplifyapp.com";
+ 
 
 const NotificationListener = () => {
   const router = useRouter();
