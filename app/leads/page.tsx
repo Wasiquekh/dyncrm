@@ -348,13 +348,13 @@ const normalizePhone = (s?: string) => (s ?? "").replace(/[\s-]/g, "");
 });
 
   const handleCreateLead = async (value: any) => {
-    //console.log("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",value)
+    // console.log("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS", value);
     //return;
     setIsLoading(true);
     // setIsFilter(false);
     setFlyoutOpen(false);
     //console.log("4444444444444444", value);
-   // return;
+    // return;
 
     try {
       await AxiosProvider.post("/leads", value);
@@ -362,7 +362,7 @@ const normalizePhone = (s?: string) => (s ?? "").replace(/[\s-]/g, "");
       setHitApi(!hitApi);
     } catch (error: any) {
       toast.error(error.response.data.msg);
-    //  console.log("lead create error",error.response.data.msg)
+      //  console.log("lead create error",error.response.data.msg)
     } finally {
       setIsLoading(false);
     }
@@ -1625,10 +1625,8 @@ const normalizePhone = (s?: string) => (s ?? "").replace(/[\s-]/g, "");
                   lead_score: undefined as number | undefined,
                   best_time_to_call: "",
                   lead_source_id: "",
-                  debt_consolidation_status_id: "",
                   whatsapp_number: "",
                   agent_id: "",
-                  consolidated_credit_status_id: "",
                   status: "",
                   company: "",
                 }}
@@ -2096,343 +2094,403 @@ const normalizePhone = (s?: string) => (s ?? "").replace(/[\s-]/g, "");
               </div>
               <div className="w-full border-b border-gray-700 mb-4"></div>
 
-<Formik
-  enableReinitialize
-  initialValues={{
-    full_name: "",
-    email: "",
-    phone: "",
-    lead_number: "",
-    state: "",
-    agent_ids: [] as string[],
-    lead_source_id: "",
-    status: "",
-  }}
-  onSubmit={() => {}}
->
-  {({
-    handleSubmit,
-    values,
-    setFieldValue,
-    setFieldTouched,
-    resetForm, // 👈 for clearing the form
-    isSubmitting,
-  }) => {
-    const norm = (v: any) => String(v ?? "").toLowerCase();
+              <Formik
+                enableReinitialize
+                initialValues={{
+                  full_name: "",
+                  email: "",
+                  phone: "",
+                  lead_number: "",
+                  state: "",
+                  agent_ids: [] as string[],
+                  lead_source_id: "",
+                  status: "",
+                }}
+                onSubmit={() => {}}
+              >
+                {({
+                  handleSubmit,
+                  values,
+                  setFieldValue,
+                  setFieldTouched,
+                  resetForm, // 👈 for clearing the form
+                  isSubmitting,
+                }) => {
+                  const norm = (v: any) => String(v ?? "").toLowerCase();
 
-    const leadSourceDisplay = values.lead_source_id
-      ? (leadSourceData || []).find(
-          (o: any) => norm(o.id) === norm(values.lead_source_id)
-        ) || null
-      : null;
+                  const leadSourceDisplay = values.lead_source_id
+                    ? (leadSourceData || []).find(
+                        (o: any) => norm(o.id) === norm(values.lead_source_id)
+                      ) || null
+                    : null;
 
-    const agentDisplay =
-      (values.agent_ids || [])
-        .map((id: any) =>
-          (agentList || []).find((o: any) => norm(o.id) === norm(id))
-        )
-        .filter(Boolean) || [];
+                  const agentDisplay =
+                    (values.agent_ids || [])
+                      .map((id: any) =>
+                        (agentList || []).find(
+                          (o: any) => norm(o.id) === norm(id)
+                        )
+                      )
+                      .filter(Boolean) || [];
 
-    const statusDisplay = values.status
-      ? (status || []).find((o: any) => norm(o.id) === norm(values.status)) ||
-        null
-      : null;
+                  const statusDisplay = values.status
+                    ? (status || []).find(
+                        (o: any) => norm(o.id) === norm(values.status)
+                      ) || null
+                    : null;
 
-    const pruneEmpty = (obj: Record<string, any>) => {
-      const out: Record<string, any> = {};
-      Object.entries(obj).forEach(([k, v]) => {
-        if (Array.isArray(v)) {
-          const arr = v.filter((x) => x !== "" && x != null);
-          if (arr.length) out[k] = arr;
-        } else if (v !== "" && v != null) {
-          out[k] = v;
-        }
-      });
-      return out;
-    };
+                  const pruneEmpty = (obj: Record<string, any>) => {
+                    const out: Record<string, any> = {};
+                    Object.entries(obj).forEach(([k, v]) => {
+                      if (Array.isArray(v)) {
+                        const arr = v.filter((x) => x !== "" && x != null);
+                        if (arr.length) out[k] = arr;
+                      } else if (v !== "" && v != null) {
+                        out[k] = v;
+                      }
+                    });
+                    return out;
+                  };
 
-    const buildCleanPayload = (v: typeof values) => {
-      const base = {
-        ...v,
-        agent_ids: (v.agent_ids || []).filter(Boolean),
-      };
-      return pruneEmpty(base);
-    };
+                  const buildCleanPayload = (v: typeof values) => {
+                    const base = {
+                      ...v,
+                      agent_ids: (v.agent_ids || []).filter(Boolean),
+                    };
+                    return pruneEmpty(base);
+                  };
 
-    const hasAnyField = (payload: Record<string, any>) =>
-      Object.keys(payload).length > 0;
+                  const hasAnyField = (payload: Record<string, any>) =>
+                    Object.keys(payload).length > 0;
 
-    const handleUnassignFilter = async () => {
-      const clean = buildCleanPayload(values);
-      if (!hasAnyField(clean)) {
-        toast.error("Please fill at least one field before submitting.");
-        return;
-      }
-      setUnAssignFilteredData(values);
-      try {
-        const response = await AxiosProvider.post(
-          `/notassignedleads/filter?page=${assignPageFilter}&pageSize=${globalPageSize}`,
-          clean
-        );
-        setUnAssignTotalPagesFilter(response.data.data.pagination.totalPages);
-        setNotAssignData(response.data.data.data);
-        setFlyoutOpen(false);
-        setClearFilter(true);
-        setUnAssignFilterPagination(true);
-        toast.success("✅ Filter applied successfully (Unassigned Leads)");
-        resetForm(); // 👈 clear form after success
-      } catch (error: any) {
-        toast.error("❌ Failed to filter Unassigned Leads");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+                  const handleUnassignFilter = async () => {
+                    const clean = buildCleanPayload(values);
+                    if (!hasAnyField(clean)) {
+                      toast.error(
+                        "Please fill at least one field before submitting."
+                      );
+                      return;
+                    }
+                    setUnAssignFilteredData(values);
+                    try {
+                      const response = await AxiosProvider.post(
+                        `/notassignedleads/filter?page=${assignPageFilter}&pageSize=${globalPageSize}`,
+                        clean
+                      );
+                      setUnAssignTotalPagesFilter(
+                        response.data.data.pagination.totalPages
+                      );
+                      setNotAssignData(response.data.data.data);
+                      setFlyoutOpen(false);
+                      setClearFilter(true);
+                      setUnAssignFilterPagination(true);
+                      toast.success(
+                        "✅ Filter applied successfully (Unassigned Leads)"
+                      );
+                      resetForm(); // 👈 clear form after success
+                    } catch (error: any) {
+                      toast.error("❌ Failed to filter Unassigned Leads");
+                    } finally {
+                      setIsLoading(false);
+                    }
+                  };
 
-    const handleAssignFilter = async () => {
-      const clean = buildCleanPayload(values);
-      if (!hasAnyField(clean)) {
-        toast.error("Please fill at least one field before submitting.");
-        return;
-      }
-      setAssignFilteredData(values);
-      try {
-        const response = await AxiosProvider.post(
-          `/leads/filter?page=${assignPageFilter}&pageSize=${globalPageSize}`,
-          clean
-        );
-        setAssignLeadData(response.data.data.data);
-        setFlyoutOpen(false);
-        setClearFilter(true);
-        setAssignTotalPagesFilter(response.data.data.pagination.totalPages);
-        setAssignFilterPagination(true);
-        toast.success("✅ Filter applied successfully (Assigned Leads)");
-        resetForm(); // 👈 clear form after success
-      } catch (error: any) {
-        toast.error("❌ Failed to filter Assigned Leads");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+                  const handleAssignFilter = async () => {
+                    const clean = buildCleanPayload(values);
+                    if (!hasAnyField(clean)) {
+                      toast.error(
+                        "Please fill at least one field before submitting."
+                      );
+                      return;
+                    }
+                    setAssignFilteredData(values);
+                    try {
+                      const response = await AxiosProvider.post(
+                        `/leads/filter?page=${assignPageFilter}&pageSize=${globalPageSize}`,
+                        clean
+                      );
+                      setAssignLeadData(response.data.data.data);
+                      setFlyoutOpen(false);
+                      setClearFilter(true);
+                      setAssignTotalPagesFilter(
+                        response.data.data.pagination.totalPages
+                      );
+                      setAssignFilterPagination(true);
+                      toast.success(
+                        "✅ Filter applied successfully (Assigned Leads)"
+                      );
+                      resetForm(); // 👈 clear form after success
+                    } catch (error: any) {
+                      toast.error("❌ Failed to filter Assigned Leads");
+                    } finally {
+                      setIsLoading(false);
+                    }
+                  };
 
-    return (
-      <form onSubmit={handleSubmit}>
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          {/* Full Name */}
-          <div className="w-full">
-            <p className="text-white text-base leading-6 mb-2">Full Name</p>
-            <Field
-              type="text"
-              name="full_name"
-              placeholder="Alexandre Dumas"
-              className="w-full border border-gray-700 rounded-[4px] bg-black text-white text-sm px-4 py-4 placeholder-gray-400"
-            />
-          </div>
+                  return (
+                    <form onSubmit={handleSubmit}>
+                      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        {/* Full Name */}
+                        <div className="w-full">
+                          <p className="text-white text-base leading-6 mb-2">
+                            Full Name
+                          </p>
+                          <Field
+                            type="text"
+                            name="full_name"
+                            placeholder="Alexandre Dumas"
+                            className="w-full border border-gray-700 rounded-[4px] bg-black text-white text-sm px-4 py-4 placeholder-gray-400"
+                          />
+                        </div>
 
-          {/* Email */}
-          <div className="w-full">
-            <p className="text-white text-base leading-6 mb-2">Email</p>
-            <Field
-              type="email"
-              name="email"
-              placeholder="alexandre@example.com"
-              className="w-full border border-gray-700 rounded-[4px] bg-black text-white text-sm px-4 py-4 placeholder-gray-400"
-            />
-          </div>
+                        {/* Email */}
+                        <div className="w-full">
+                          <p className="text-white text-base leading-6 mb-2">
+                            Email
+                          </p>
+                          <Field
+                            type="email"
+                            name="email"
+                            placeholder="alexandre@example.com"
+                            className="w-full border border-gray-700 rounded-[4px] bg-black text-white text-sm px-4 py-4 placeholder-gray-400"
+                          />
+                        </div>
 
-          {/* Phone */}
-          <div className="w-full">
-            <p className="text-white text-base leading-6 mb-2">Phone</p>
-            <Field
-              type="text"
-              name="phone"
-              placeholder="+91 9XXXXXXXXX"
-              className="w-full border border-gray-700 rounded-[4px] bg-black text-white text-sm px-4 py-4 placeholder-gray-400"
-            />
-          </div>
+                        {/* Phone */}
+                        <div className="w-full">
+                          <p className="text-white text-base leading-6 mb-2">
+                            Phone
+                          </p>
+                          <Field
+                            type="text"
+                            name="phone"
+                            placeholder="+91 9XXXXXXXXX"
+                            className="w-full border border-gray-700 rounded-[4px] bg-black text-white text-sm px-4 py-4 placeholder-gray-400"
+                          />
+                        </div>
 
-          {/* Lead Number */}
-          <div className="w-full">
-            <p className="text-white text-base leading-6 mb-2">Lead Number</p>
-            <Field
-              type="text"
-              name="lead_number"
-              placeholder="LN-000123"
-              className="w-full border border-gray-700 rounded-[4px] bg-black text-white text-sm px-4 py-4 placeholder-gray-400"
-            />
-          </div>
+                        {/* Lead Number */}
+                        <div className="w-full">
+                          <p className="text-white text-base leading-6 mb-2">
+                            Lead Number
+                          </p>
+                          <Field
+                            type="text"
+                            name="lead_number"
+                            placeholder="LN-000123"
+                            className="w-full border border-gray-700 rounded-[4px] bg-black text-white text-sm px-4 py-4 placeholder-gray-400"
+                          />
+                        </div>
 
-          {/* State */}
-          <div className="w-full">
-            <p className="text-white text-base leading-6 mb-2">State</p>
-            <Field
-              type="text"
-              name="state"
-              placeholder="Maharashtra"
-              className="w-full border border-gray-700 rounded-[4px] bg-black text-white text-sm px-4 py-4 placeholder-gray-400"
-            />
-          </div>
+                        {/* State */}
+                        <div className="w-full">
+                          <p className="text-white text-base leading-6 mb-2">
+                            State
+                          </p>
+                          <Field
+                            type="text"
+                            name="state"
+                            placeholder="Maharashtra"
+                            className="w-full border border-gray-700 rounded-[4px] bg-black text-white text-sm px-4 py-4 placeholder-gray-400"
+                          />
+                        </div>
 
-          {/* Agent (Multi) */}
-          <div className="w-full">
-            <p className="text-white text-base leading-6 mb-2">Agent</p>
-            <Select
-              value={agentDisplay}
-              onChange={(selected: any) =>
-                setFieldValue(
-                  "agent_ids",
-                  selected ? selected.map((s: any) => s.id) : []
-                )
-              }
-              onBlur={() => setFieldTouched("agent_ids", true)}
-              getOptionLabel={(opt: any) => opt.name}
-              getOptionValue={(opt: any) => String(opt.id)}
-              options={agentList}
-              placeholder="Select Agent"
-              isMulti
-              isClearable
-              classNames={{
-                control: ({ isFocused }: any) =>
-                  `onHoverBoxShadow !w-full !border-[0.4px] !rounded-[4px] !text-sm !leading-4 !font-medium !py-1.5 !px-1 !bg-black !shadow-sm ${
-                    isFocused ? "!border-primary-500" : "!border-gray-700"
-                  }`,
-              }}
-              styles={{
-                menu: (base) => ({
-                  ...base,
-                  borderRadius: 4,
-                  backgroundColor: "#000",
-                }),
-                option: (base, { isFocused, isSelected }) => ({
-                  ...base,
-                  backgroundColor: isSelected
-                    ? "var(--primary-600)"
-                    : isFocused
-                    ? "#222"
-                    : "#000",
-                  color: "#fff",
-                  cursor: "pointer",
-                }),
-                singleValue: (base) => ({ ...base, color: "#fff" }),
-                input: (base) => ({ ...base, color: "#fff" }),
-                placeholder: (base) => ({ ...base, color: "#aaa" }),
-              }}
-            />
-          </div>
+                        {/* Agent (Multi) */}
+                        <div className="w-full">
+                          <p className="text-white text-base leading-6 mb-2">
+                            Agent
+                          </p>
+                          <Select
+                            value={agentDisplay}
+                            onChange={(selected: any) =>
+                              setFieldValue(
+                                "agent_ids",
+                                selected ? selected.map((s: any) => s.id) : []
+                              )
+                            }
+                            onBlur={() => setFieldTouched("agent_ids", true)}
+                            getOptionLabel={(opt: any) => opt.name}
+                            getOptionValue={(opt: any) => String(opt.id)}
+                            options={agentList}
+                            placeholder="Select Agent"
+                            isMulti
+                            isClearable
+                            classNames={{
+                              control: ({ isFocused }: any) =>
+                                `onHoverBoxShadow !w-full !border-[0.4px] !rounded-[4px] !text-sm !leading-4 !font-medium !py-1.5 !px-1 !bg-black !shadow-sm ${
+                                  isFocused
+                                    ? "!border-primary-500"
+                                    : "!border-gray-700"
+                                }`,
+                            }}
+                            styles={{
+                              menu: (base) => ({
+                                ...base,
+                                borderRadius: 4,
+                                backgroundColor: "#000",
+                              }),
+                              option: (base, { isFocused, isSelected }) => ({
+                                ...base,
+                                backgroundColor: isSelected
+                                  ? "var(--primary-600)"
+                                  : isFocused
+                                  ? "#222"
+                                  : "#000",
+                                color: "#fff",
+                                cursor: "pointer",
+                              }),
+                              singleValue: (base) => ({
+                                ...base,
+                                color: "#fff",
+                              }),
+                              input: (base) => ({ ...base, color: "#fff" }),
+                              placeholder: (base) => ({
+                                ...base,
+                                color: "#aaa",
+                              }),
+                            }}
+                          />
+                        </div>
 
-          {/* Lead Source */}
-          <div className="w-full">
-            <p className="text-white text-base leading-6 mb-2">Lead Source</p>
-            <Select
-              value={leadSourceDisplay}
-              onChange={(selected: any) =>
-                setFieldValue("lead_source_id", selected ? selected.id : "")
-              }
-              onBlur={() => setFieldTouched("lead_source_id", true)}
-              getOptionLabel={(opt: any) => opt.name}
-              getOptionValue={(opt: any) => String(opt.id)}
-              options={leadSourceData}
-              placeholder="Select Lead Source"
-              isClearable
-              classNames={{
-                control: ({ isFocused }: any) =>
-                  `onHoverBoxShadow !w-full !border-[0.4px] !rounded-[4px] !text-sm !leading-4 !font-medium !py-1.5 !px-1 !bg-black !shadow-sm ${
-                    isFocused ? "!border-primary-500" : "!border-gray-700"
-                  }`,
-              }}
-              styles={{
-                menu: (base) => ({
-                  ...base,
-                  borderRadius: 4,
-                  backgroundColor: "#000",
-                }),
-                option: (base, { isFocused, isSelected }) => ({
-                  ...base,
-                  backgroundColor: isSelected
-                    ? "var(--primary-600)"
-                    : isFocused
-                    ? "#222"
-                    : "#000",
-                  color: "#fff",
-                  cursor: "pointer",
-                }),
-                singleValue: (base) => ({ ...base, color: "#fff" }),
-                input: (base) => ({ ...base, color: "#fff" }),
-                placeholder: (base) => ({ ...base, color: "#aaa" }),
-              }}
-            />
-          </div>
+                        {/* Lead Source */}
+                        <div className="w-full">
+                          <p className="text-white text-base leading-6 mb-2">
+                            Lead Source
+                          </p>
+                          <Select
+                            value={leadSourceDisplay}
+                            onChange={(selected: any) =>
+                              setFieldValue(
+                                "lead_source_id",
+                                selected ? selected.id : ""
+                              )
+                            }
+                            onBlur={() =>
+                              setFieldTouched("lead_source_id", true)
+                            }
+                            getOptionLabel={(opt: any) => opt.name}
+                            getOptionValue={(opt: any) => String(opt.id)}
+                            options={leadSourceData}
+                            placeholder="Select Lead Source"
+                            isClearable
+                            classNames={{
+                              control: ({ isFocused }: any) =>
+                                `onHoverBoxShadow !w-full !border-[0.4px] !rounded-[4px] !text-sm !leading-4 !font-medium !py-1.5 !px-1 !bg-black !shadow-sm ${
+                                  isFocused
+                                    ? "!border-primary-500"
+                                    : "!border-gray-700"
+                                }`,
+                            }}
+                            styles={{
+                              menu: (base) => ({
+                                ...base,
+                                borderRadius: 4,
+                                backgroundColor: "#000",
+                              }),
+                              option: (base, { isFocused, isSelected }) => ({
+                                ...base,
+                                backgroundColor: isSelected
+                                  ? "var(--primary-600)"
+                                  : isFocused
+                                  ? "#222"
+                                  : "#000",
+                                color: "#fff",
+                                cursor: "pointer",
+                              }),
+                              singleValue: (base) => ({
+                                ...base,
+                                color: "#fff",
+                              }),
+                              input: (base) => ({ ...base, color: "#fff" }),
+                              placeholder: (base) => ({
+                                ...base,
+                                color: "#aaa",
+                              }),
+                            }}
+                          />
+                        </div>
 
-          {/* Status */}
-          <div className="w-full">
-            <p className="text-white text-base leading-6 mb-2">Status</p>
-            <Select
-              value={statusDisplay}
-              onChange={(selected: any) =>
-                setFieldValue("status", selected ? selected.id : "")
-              }
-              onBlur={() => setFieldTouched("status", true)}
-              getOptionLabel={(opt: any) => opt.name}
-              getOptionValue={(opt: any) => String(opt.id)}
-              options={status}
-              placeholder="Select Status"
-              isClearable
-              classNames={{
-                control: ({ isFocused }: any) =>
-                  `onHoverBoxShadow !w-full !border-[0.4px] !rounded-[4px] !text-sm !leading-4 !font-medium !py-1.5 !px-1 !bg-black !shadow-sm ${
-                    isFocused ? "!border-primary-500" : "!border-gray-700"
-                  }`,
-              }}
-              styles={{
-                menu: (base) => ({
-                  ...base,
-                  borderRadius: 4,
-                  backgroundColor: "#000",
-                }),
-                option: (base, { isFocused, isSelected }) => ({
-                  ...base,
-                  backgroundColor: isSelected
-                    ? "var(--primary-600)"
-                    : isFocused
-                    ? "#222"
-                    : "#000",
-                  color: "#fff",
-                  cursor: "pointer",
-                }),
-                singleValue: (base) => ({ ...base, color: "#fff" }),
-                input: (base) => ({ ...base, color: "#fff" }),
-                placeholder: (base) => ({ ...base, color: "#aaa" }),
-              }}
-            />
-          </div>
-        </div>
+                        {/* Status */}
+                        <div className="w-full">
+                          <p className="text-white text-base leading-6 mb-2">
+                            Status
+                          </p>
+                          <Select
+                            value={statusDisplay}
+                            onChange={(selected: any) =>
+                              setFieldValue(
+                                "status",
+                                selected ? selected.id : ""
+                              )
+                            }
+                            onBlur={() => setFieldTouched("status", true)}
+                            getOptionLabel={(opt: any) => opt.name}
+                            getOptionValue={(opt: any) => String(opt.id)}
+                            options={status}
+                            placeholder="Select Status"
+                            isClearable
+                            classNames={{
+                              control: ({ isFocused }: any) =>
+                                `onHoverBoxShadow !w-full !border-[0.4px] !rounded-[4px] !text-sm !leading-4 !font-medium !py-1.5 !px-1 !bg-black !shadow-sm ${
+                                  isFocused
+                                    ? "!border-primary-500"
+                                    : "!border-gray-700"
+                                }`,
+                            }}
+                            styles={{
+                              menu: (base) => ({
+                                ...base,
+                                borderRadius: 4,
+                                backgroundColor: "#000",
+                              }),
+                              option: (base, { isFocused, isSelected }) => ({
+                                ...base,
+                                backgroundColor: isSelected
+                                  ? "var(--primary-600)"
+                                  : isFocused
+                                  ? "#222"
+                                  : "#000",
+                                color: "#fff",
+                                cursor: "pointer",
+                              }),
+                              singleValue: (base) => ({
+                                ...base,
+                                color: "#fff",
+                              }),
+                              input: (base) => ({ ...base, color: "#fff" }),
+                              placeholder: (base) => ({
+                                ...base,
+                                color: "#aaa",
+                              }),
+                            }}
+                          />
+                        </div>
+                      </div>
 
-        <div className="flex gap-4">
-          {userRole === "Admin" && (
-            <button
-              type="button"
-              disabled={isSubmitting}
-              onClick={handleUnassignFilter}
-              className="py-[13px] px-[26px] bg-primary-600 rounded-[4px] text-white text-base font-medium hover:bg-primary-700 w-full"
-            >
-              Search UnAssign leads
-            </button>
-          )}
-          <button
-            type="button"
-            disabled={isSubmitting}
-            onClick={handleAssignFilter}
-            className="py-[13px] px-[26px] bg-primary-600 rounded-[4px] text-white text-base font-medium hover:bg-primary-700 w-full"
-          >
-            Search Assign leads
-          </button>
-        </div>
-      </form>
-    );
-  }}
-</Formik>
-
-
-
+                      <div className="flex gap-4">
+                        {userRole === "Admin" && (
+                          <button
+                            type="button"
+                            disabled={isSubmitting}
+                            onClick={handleUnassignFilter}
+                            className="py-[13px] px-[26px] bg-primary-600 rounded-[4px] text-white text-base font-medium hover:bg-primary-700 w-full"
+                          >
+                            Search UnAssign leads
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          disabled={isSubmitting}
+                          onClick={handleAssignFilter}
+                          className="py-[13px] px-[26px] bg-primary-600 rounded-[4px] text-white text-base font-medium hover:bg-primary-700 w-full"
+                        >
+                          Search Assign leads
+                        </button>
+                      </div>
+                    </form>
+                  );
+                }}
+              </Formik>
             </div>
           )}
           {isEditLead && (
@@ -2480,7 +2538,7 @@ const normalizePhone = (s?: string) => (s ?? "").replace(/[\s-]/g, "");
                     full_name: values.full_name,
                     email: values.email,
                     phone: values.phone || undefined,
-                   company: values.company || undefined,
+                    company: values.company || undefined,
                     whatsapp_number: values.whatsapp_number || undefined,
                     address_line1: values.address_line1 || undefined,
                     address_line2: values.address_line2 || undefined,
