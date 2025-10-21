@@ -1787,6 +1787,7 @@ setIsActivityHistoryPaination(true)
                                 "",
                               best_time_to_call: data?.best_time_to_call ?? "",
                               whatsapp_number: data?.whatsapp_number ?? "",
+                              status: data?.status ?? "", // 👈 added
                             }}
                             validationSchema={Yup.object({
                               agent_id: Yup.string().nullable(),
@@ -1796,13 +1797,14 @@ setIsActivityHistoryPaination(true)
                                 Yup.string().nullable(),
                               best_time_to_call: Yup.string().trim().nullable(),
                               whatsapp_number: Yup.string().trim().nullable(),
+                              status: Yup.string().nullable(), // 👈 added
                             })}
                             onSubmit={async (values) => {
                               try {
                                 await AxiosProvider.post(
                                   "/leads/update",
                                   values
-                                );
+                                ); // values includes `status`
                                 toast.success("Lead is Updated");
                                 setHitApi(!hitApi);
                                 setIsLeadPropertyEdit(!isleadPropertyEdit);
@@ -1837,6 +1839,10 @@ setIsActivityHistoryPaination(true)
                                 consolidationData,
                                 values.consolidated_credit_status_id
                               );
+                              const statusValue = findById(
+                                status,
+                                values.status
+                              ); // 👈 added
 
                               return (
                                 <Form>
@@ -1879,6 +1885,76 @@ setIsActivityHistoryPaination(true)
                                             }
                                             options={agent}
                                             placeholder="Select Agent"
+                                            isClearable
+                                            classNames={{
+                                              control: ({ isFocused }: any) =>
+                                                `onHoverBoxShadow !w-full !border-[0.4px] !rounded-[4px] !text-sm !leading-4 !font-medium !py-1.5 !px-1 !bg-black !shadow-sm ${
+                                                  isFocused
+                                                    ? "!border-primary-500"
+                                                    : "!border-gray-700"
+                                                }`,
+                                            }}
+                                            styles={{
+                                              menu: (base) => ({
+                                                ...base,
+                                                borderRadius: 4,
+                                                backgroundColor: "#000",
+                                              }),
+                                              option: (
+                                                base,
+                                                { isFocused, isSelected }
+                                              ) => ({
+                                                ...base,
+                                                backgroundColor: isSelected
+                                                  ? "var(--primary-600)"
+                                                  : isFocused
+                                                  ? "#222"
+                                                  : "#000",
+                                                color: "#fff",
+                                                cursor: "pointer",
+                                              }),
+                                              singleValue: (base) => ({
+                                                ...base,
+                                                color: "#fff",
+                                              }),
+                                              input: (base) => ({
+                                                ...base,
+                                                color: "#fff",
+                                              }),
+                                              placeholder: (base) => ({
+                                                ...base,
+                                                color: "#aaa",
+                                              }),
+                                            }}
+                                          />
+                                        </td>
+                                      </tr>
+
+                                      {/* Status -> Dropdown (uses key `status`) */}
+                                      <tr className="border border-tableBorder  hover:bg-primary-600 transition-colors">
+                                        <td className="text-sm text-[#FFD700] py-4 px-4">
+                                          Status
+                                        </td>
+                                        <td className="py-4 px-4">
+                                          <Select
+                                            value={statusValue}
+                                            onChange={(selected: any) =>
+                                              setFieldValue(
+                                                "status",
+                                                selected ? selected.id : ""
+                                              )
+                                            }
+                                            onBlur={() =>
+                                              setFieldTouched("status", true)
+                                            }
+                                            getOptionLabel={(opt: any) =>
+                                              opt.name
+                                            }
+                                            getOptionValue={(opt: any) =>
+                                              String(opt.id)
+                                            }
+                                            options={status}
+                                            placeholder="Select Status"
                                             isClearable
                                             classNames={{
                                               control: ({ isFocused }: any) =>

@@ -348,8 +348,8 @@ const normalizePhone = (s?: string) => (s ?? "").replace(/[\s-]/g, "");
 });
 
   const handleCreateLead = async (value: any) => {
-    // console.log("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS", value);
-    //return;
+    //  console.log("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS", value);
+    //  return;
     setIsLoading(true);
     // setIsFilter(false);
     setFlyoutOpen(false);
