@@ -46,15 +46,18 @@ const CreateLead: React.FC<CreateLeadProps> = ({ closeFlyOut }) => {
   const [debtConsolidation, setDebtConsolidation] = useState<DebtConsolidation[]>([]);
   const [consolidationData, setConsolidationData] = useState<Consolidation[]>([]);
 
-  const status = [
-    { id: "hot-lead", name: "Hot lead" },
-    { id: "no-connect", name: "No connect" },
-    { id: "under-discussion", name: "Under Discussion" },
-    { id: "not-interested", name: "Not interested" },
-    { id: "agreement-send", name: "Agreement send" },
-    { id: "signed-agreement-received", name: "Signed agreement received" },
-    { id: "hold", name: "Hold" },
-  ];
+  		  const status = [
+          { id: "Hot lead", name: "Hot lead" },
+          { id: "No connect", name: "No connect" },
+          { id: "Under Discussion", name: "Under Discussion" },
+          { id: "Not interested", name: "Not interested" },
+          { id: "Agreement send", name: "Agreement send" },
+          {
+            id: "Signed agreement received",
+            name: "Signed agreement received",
+          },
+          { id: "Hold", name: "Hold" },
+        ];
 
   // FETCH DROPDOWN DATA
   const leadSource = async () => {
