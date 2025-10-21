@@ -3814,7 +3814,7 @@ setIsActivityHistoryPaination(true)
                     const payload = {
                       task_id: taskEditObject?.id,
                       location: values.location,
-                      description: values.description || "",
+                      details: values.description || "",
                       start_at_text: values.start_at
                         ? formatDateTime(values.start_at)
                         : "",
@@ -3824,6 +3824,11 @@ setIsActivityHistoryPaination(true)
                     };
 
                     console.log("UPDATE TASK PAYLOAD =>", payload);
+                    // console.log(
+                    //   "++++++++++++++++++++++++++++++++++++++++++++",
+                    //   payload
+                    // );
+                    // return;
                     try {
                       await AxiosProvider.post("/leads/tasks/edit", payload);
                       toast.success("Lead task is updated");
