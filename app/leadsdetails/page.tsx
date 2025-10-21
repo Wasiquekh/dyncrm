@@ -298,6 +298,18 @@ export default function Home() {
   const [isSendTemplate, setIsSendtTemplate] = useState<boolean>(false)
   const [templateData, setTemplateData] = useState<string[]>([])
   console.log("++++++++++++++++++++++++++++++++++++++++",data)
+
+  		
+		  const status = [
+        { id: "hot-lead", name: "Hot lead" },
+        { id: "no-connect", name: "No connect" },
+        { id: "under-discussion", name: "Under Discussion" },
+        { id: "not-interested", name: "Not interested" },
+        { id: "agreement-send", name: "Agreement send" },
+        { id: "signed-agreement-received", name: "Signed agreement received" },
+        { id: "hold", name: "Hold" },
+      ];
+  
     useEffect(() => {
       const fetchData = async () => {
         
@@ -1611,26 +1623,25 @@ setIsActivityHistoryPaination(true)
   </div> */}
 
                                 {/* Province (stored in backend as "state") */}
-                              {/* Province / State (Text Input) */}
-<div>
-  <label className="block text-sm font-medium text-white mb-1">
-    Province / State
-  </label>
-  <Field
-    name="state"
-    type="text"
-    className="w-full border-b border-white pl-0.5 text-sm leading-6 px-0 py-0 
+                                {/* Province / State (Text Input) */}
+                                <div>
+                                  <label className="block text-sm font-medium text-white mb-1">
+                                    Province / State
+                                  </label>
+                                  <Field
+                                    name="state"
+                                    type="text"
+                                    className="w-full border-b border-white pl-0.5 text-sm leading-6 px-0 py-0 
                focus:outline-none bg-transparent text-white mb-2 placeholder-white 
                placeholder:opacity-[0.9]"
-    placeholder="Enter province/state"
-  />
-  <ErrorMessage
-    name="state"
-    component="p"
-    className="text-red-500 text-xs mt-1"
-  />
-</div>
-
+                                    placeholder="Enter province/state"
+                                  />
+                                  <ErrorMessage
+                                    name="state"
+                                    component="p"
+                                    className="text-red-500 text-xs mt-1"
+                                  />
+                                </div>
                               </div>
 
                               {/* ✅ Note field */}
@@ -1719,10 +1730,13 @@ setIsActivityHistoryPaination(true)
                                 label: "Lead Source",
                                 value: data?.lead_source,
                               },
-        
                               {
                                 label: "WHATSAPP",
                                 value: data?.whatsapp_number,
+                              },
+                              {
+                                label: "Status",
+                                value: data?.status,
                               },
                               ...(userRole === "Admin"
                                 ? [
@@ -1735,7 +1749,7 @@ setIsActivityHistoryPaination(true)
                             ].map((row, idx) => (
                               <tr
                                 key={idx}
-                                className="border    transition-colors border-b border-[#E7E7E7] odd:bg-[#404040]"
+                                className="border transition-colors border-b border-[#E7E7E7] odd:bg-[#404040]"
                               >
                                 <td className="text-sm text-gray-400 py-4 px-4">
                                   {row.label}
@@ -2584,253 +2598,283 @@ setIsActivityHistoryPaination(true)
             <div className="w-full border-b border-gray-700 mb-4"></div>
 
             {/* Formik form */}
-          <Formik
-  enableReinitialize
-  initialValues={{
-    id: formInitialValues?.id ?? "",
-    lead_id: formInitialValues?.lead_id ?? "",
-    conversation: formInitialValues?.conversation ?? "",
-    occurred_at: formInitialValues?.occurred_at ?? "", // ISO string or ""
-    disposition_id:
-      formInitialValues?.disposition_id != null
-        ? String(formInitialValues.disposition_id)
-        : "",
-    agent_id:
-      formInitialValues?.agent_id != null
-        ? String(formInitialValues.agent_id)
-        : "",
-  }}
-  /* ✅ Inline schema (no separate const) */
-  validationSchema={Yup.object({
-    occurred_at: Yup.date().typeError("Pick a valid date").nullable(),
-    disposition_id: Yup.string()
-      .transform((v, o) => (o === null || o === "" ? undefined : String(o)))
-      .required("Disposition is required"),
-    agent_id: Yup.string()
-      .transform((v, o) => (o === null || o === "" ? undefined : String(o)))
-      .required("Agent is required"),
-    conversation: Yup.string().trim().required("Conversation is required"),
-  })}
-  onSubmit={async (values, { setSubmitting }) => {
-    const payload: UpdateActivityPayload = {
-      id: values.id,
-      lead_id: values.lead_id,
-      conversation: values.conversation,
-      occurred_at: values.occurred_at || undefined,
-      disposition_id: values.disposition_id || undefined,
-      agent_id: values.agent_id || undefined,
-    };
-    try {
-      await UpdateLeadsActivity(payload);
-      setReloadKey((k) => k + 1);
-    } catch (e) {
-      console.error("API error:", e);
-    } finally {
-      setSubmitting(false);
-    }
-  }}
-  validateOnBlur
-  validateOnChange={false}
->
-  {({
-    values,
-    errors,
-    touched,
-    handleChange,
-    handleSubmit,
-    setFieldValue,
-    setFieldTouched,
-    isSubmitting,
-  }) => (
-    <form onSubmit={handleSubmit} noValidate>
-      {/* Grid: Occurred At, Disposition, Agent */}
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:justify-between mb-4 sm:mb-6">
-        {/* Occurred At */}
-        <div className="w-full relative">
-          <p className="text-white font-medium text-base leading-6 mb-2">
-            Created At
-          </p>
-          <DatePicker
-            selected={values.occurred_at ? new Date(values.occurred_at) : null}
-            onChange={(date: Date | null) =>
-              setFieldValue("occurred_at", date ? date.toISOString() : "")
-            }
-            onBlur={() => setFieldTouched("occurred_at", true)}
-            name="occurred_at"
-            dateFormat="yyyy-MM-dd"
-            placeholderText="yyyy-mm-dd"
-            className="hover:shadow-hoverInputShadow focus-border-primary !w-full border border-gray-700 rounded-[4px] text-sm leading-4 font-medium placeholder-gray-400 py-4 px-4 bg-black text-white shadow-sm"
-            popperClassName="custom-datepicker"
-            dayClassName={(date) => {
-              const today = new Date().toDateString();
-              const selectedDate = values.occurred_at
-                ? new Date(values.occurred_at).toDateString()
-                : null;
-              if (today === date.toDateString())
-                return "bg-[#FFF0F1] text-[#A3000E]";
-              if (selectedDate === date.toDateString())
-                return "bg-[#A3000E] text-white";
-              return "hover:bg-[#222] hover:text-white";
-            }}
-          />
-          {touched.occurred_at && errors.occurred_at && (
-            <p className="text-red-500 absolute top-[85px] text-xs">
-              {String(errors.occurred_at)}
-            </p>
-          )}
-        </div>
+            <Formik
+              enableReinitialize
+              initialValues={{
+                id: formInitialValues?.id ?? "",
+                lead_id: formInitialValues?.lead_id ?? "",
+                conversation: formInitialValues?.conversation ?? "",
+                occurred_at: formInitialValues?.occurred_at ?? "", // ISO string or ""
+                disposition_id:
+                  formInitialValues?.disposition_id != null
+                    ? String(formInitialValues.disposition_id)
+                    : "",
+                agent_id:
+                  formInitialValues?.agent_id != null
+                    ? String(formInitialValues.agent_id)
+                    : "",
+              }}
+              /* ✅ Inline schema (no separate const) */
+              validationSchema={Yup.object({
+                occurred_at: Yup.date()
+                  .typeError("Pick a valid date")
+                  .nullable(),
+                disposition_id: Yup.string()
+                  .transform((v, o) =>
+                    o === null || o === "" ? undefined : String(o)
+                  )
+                  .required("Disposition is required"),
+                agent_id: Yup.string()
+                  .transform((v, o) =>
+                    o === null || o === "" ? undefined : String(o)
+                  )
+                  .required("Agent is required"),
+                conversation: Yup.string()
+                  .trim()
+                  .required("Conversation is required"),
+              })}
+              onSubmit={async (values, { setSubmitting }) => {
+                const payload: UpdateActivityPayload = {
+                  id: values.id,
+                  lead_id: values.lead_id,
+                  conversation: values.conversation,
+                  occurred_at: values.occurred_at || undefined,
+                  disposition_id: values.disposition_id || undefined,
+                  agent_id: values.agent_id || undefined,
+                };
+                try {
+                  await UpdateLeadsActivity(payload);
+                  setReloadKey((k) => k + 1);
+                } catch (e) {
+                  console.error("API error:", e);
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
+              validateOnBlur
+              validateOnChange={false}
+            >
+              {({
+                values,
+                errors,
+                touched,
+                handleChange,
+                handleSubmit,
+                setFieldValue,
+                setFieldTouched,
+                isSubmitting,
+              }) => (
+                <form onSubmit={handleSubmit} noValidate>
+                  {/* Grid: Occurred At, Disposition, Agent */}
+                  <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:justify-between mb-4 sm:mb-6">
+                    {/* Occurred At */}
+                    <div className="w-full relative">
+                      <p className="text-white font-medium text-base leading-6 mb-2">
+                        Created At
+                      </p>
+                      <DatePicker
+                        selected={
+                          values.occurred_at
+                            ? new Date(values.occurred_at)
+                            : null
+                        }
+                        onChange={(date: Date | null) =>
+                          setFieldValue(
+                            "occurred_at",
+                            date ? date.toISOString() : ""
+                          )
+                        }
+                        onBlur={() => setFieldTouched("occurred_at", true)}
+                        name="occurred_at"
+                        dateFormat="yyyy-MM-dd"
+                        placeholderText="yyyy-mm-dd"
+                        className="hover:shadow-hoverInputShadow focus-border-primary !w-full border border-gray-700 rounded-[4px] text-sm leading-4 font-medium placeholder-gray-400 py-4 px-4 bg-black text-white shadow-sm"
+                        popperClassName="custom-datepicker"
+                        dayClassName={(date) => {
+                          const today = new Date().toDateString();
+                          const selectedDate = values.occurred_at
+                            ? new Date(values.occurred_at).toDateString()
+                            : null;
+                          if (today === date.toDateString())
+                            return "bg-[#FFF0F1] text-[#A3000E]";
+                          if (selectedDate === date.toDateString())
+                            return "bg-[#A3000E] text-white";
+                          return "hover:bg-[#222] hover:text-white";
+                        }}
+                      />
+                      {touched.occurred_at && errors.occurred_at && (
+                        <p className="text-red-500 absolute top-[85px] text-xs">
+                          {String(errors.occurred_at)}
+                        </p>
+                      )}
+                    </div>
 
-        {/* Disposition */}
-        <div className="w-full relative">
-          <p className="text-white font-medium text-base leading-6 mb-2">
-            Disposition
-          </p>
-      <Select
-  value={
-    (disposition || []).find(
-      (opt: any) => String(opt.id) === String(values.disposition_id)
-    ) || null
-  }
-  onChange={(selectedOption: any) => {
-    const id = selectedOption ? String(selectedOption.id) : "";
-    const name = selectedOption ? selectedOption.name : "";
-    setFieldValue("disposition_id", id);
-    setFieldValue(
-      "conversation",
-      selectedOption && DISPO_AUTOFILL.has(name)
-        ? name
-        : values.conversation // keep old text if not auto-fill
-    );
-  }}
-  onBlur={() => setFieldTouched("disposition_id", true)}
-  getOptionLabel={(opt: any) => opt.name}
-  getOptionValue={(opt: any) => String(opt.id)}
-  options={disposition}
-  placeholder="Select Disposition"
-  isClearable
-  classNames={{
-    control: ({ isFocused }: any) =>
-      `onHoverBoxShadow !w-full !border-[0.4px] !rounded-[4px] !text-sm !leading-4 !font-medium !py-1.5 !px-1 !bg-black !shadow-sm ${
-        isFocused ? "!border-primary-500" : "!border-gray-700"
-      }`,
-  }}
-  styles={{
-    menu: (base) => ({ ...base, borderRadius: 4, backgroundColor: "#000" }),
-    option: (base, { isFocused, isSelected }) => ({
-      ...base,
-      backgroundColor: isSelected
-        ? "var(--primary-500)"
-        : isFocused
-        ? "#222"
-        : "#000",
-      color: "#fff",
-      cursor: "pointer",
-    }),
-    singleValue: (base) => ({ ...base, color: "#fff" }),
-    input: (base) => ({ ...base, color: "#fff" }),
-    placeholder: (base) => ({ ...base, color: "#aaa" }),
-  }}
-/>
+                    {/* Disposition */}
+                    <div className="w-full relative">
+                      <p className="text-white font-medium text-base leading-6 mb-2">
+                        Disposition
+                      </p>
+                      <Select
+                        value={
+                          (disposition || []).find(
+                            (opt: any) =>
+                              String(opt.id) === String(values.disposition_id)
+                          ) || null
+                        }
+                        onChange={(selectedOption: any) => {
+                          const id = selectedOption
+                            ? String(selectedOption.id)
+                            : "";
+                          const name = selectedOption
+                            ? selectedOption.name
+                            : "";
+                          setFieldValue("disposition_id", id);
+                          setFieldValue(
+                            "conversation",
+                            selectedOption && DISPO_AUTOFILL.has(name)
+                              ? name
+                              : values.conversation // keep old text if not auto-fill
+                          );
+                        }}
+                        onBlur={() => setFieldTouched("disposition_id", true)}
+                        getOptionLabel={(opt: any) => opt.name}
+                        getOptionValue={(opt: any) => String(opt.id)}
+                        options={disposition}
+                        placeholder="Select Disposition"
+                        isClearable
+                        classNames={{
+                          control: ({ isFocused }: any) =>
+                            `onHoverBoxShadow !w-full !border-[0.4px] !rounded-[4px] !text-sm !leading-4 !font-medium !py-1.5 !px-1 !bg-black !shadow-sm ${
+                              isFocused
+                                ? "!border-primary-500"
+                                : "!border-gray-700"
+                            }`,
+                        }}
+                        styles={{
+                          menu: (base) => ({
+                            ...base,
+                            borderRadius: 4,
+                            backgroundColor: "#000",
+                          }),
+                          option: (base, { isFocused, isSelected }) => ({
+                            ...base,
+                            backgroundColor: isSelected
+                              ? "var(--primary-500)"
+                              : isFocused
+                              ? "#222"
+                              : "#000",
+                            color: "#fff",
+                            cursor: "pointer",
+                          }),
+                          singleValue: (base) => ({ ...base, color: "#fff" }),
+                          input: (base) => ({ ...base, color: "#fff" }),
+                          placeholder: (base) => ({ ...base, color: "#aaa" }),
+                        }}
+                      />
 
-          {touched.disposition_id && errors.disposition_id && (
-            <p className="text-red-500 absolute top-[85px] text-xs">
-              {String(errors.disposition_id)}
-            </p>
-          )}
-        </div>
+                      {touched.disposition_id && errors.disposition_id && (
+                        <p className="text-red-500 absolute top-[85px] text-xs">
+                          {String(errors.disposition_id)}
+                        </p>
+                      )}
+                    </div>
 
-        {/* Agent */}
-        <div className="w-full relative">
-          <p className="text-white font-medium text-base leading-6 mb-2">
-            Agent
-          </p>
-          <Select
-            value={
-              (agent || []).find(
-                (opt: any) => String(opt.id) === String(values.agent_id)
-              ) || null
-            }
-            onChange={(selectedOption: any) =>
-              setFieldValue(
-                "agent_id",
-                selectedOption ? String(selectedOption.id) : ""
-              )
-            }
-            onBlur={() => setFieldTouched("agent_id", true)}
-            getOptionLabel={(opt: any) => opt.name}
-            getOptionValue={(opt: any) => String(opt.id)}
-            options={agent}
-            placeholder="Select Agent"
-            isClearable
-            isDisabled={userRole !== "Admin"}
-            classNames={{
-              control: ({ isFocused }) =>
-                `!w-full !border-[0.4px] !rounded-[4px] !text-sm !leading-4 !font-medium !py-1.5 !px-1 !bg-black !shadow-sm ${
-                  isFocused ? "!border-primary-500" : "!border-gray-700"
-                }`,
-            }}
-            styles={{
-              menu: (base) => ({
-                ...base,
-                borderRadius: 4,
-                backgroundColor: "#000",
-              }),
-              option: (base, { isFocused, isSelected }) => ({
-                ...base,
-                backgroundColor: isSelected
-                  ? "var(--primary-500)"
-                  : isFocused
-                  ? "#222"
-                  : "#000",
-                color: "#fff",
-                cursor: userRole === "Admin" ? "pointer" : "not-allowed",
-              }),
-              singleValue: (base) => ({ ...base, color: "#fff" }),
-              placeholder: (base) => ({ ...base, color: "#999" }),
-            }}
-          />
-          {touched.agent_id && errors.agent_id && (
-            <p className="text-red-500 absolute top-[85px] text-xs">
-              {String(errors.agent_id)}
-            </p>
-          )}
-        </div>
-      </div>
+                    {/* Agent */}
+                    <div className="w-full relative">
+                      <p className="text-white font-medium text-base leading-6 mb-2">
+                        Agent
+                      </p>
+                      <Select
+                        value={
+                          (agent || []).find(
+                            (opt: any) =>
+                              String(opt.id) === String(values.agent_id)
+                          ) || null
+                        }
+                        onChange={(selectedOption: any) =>
+                          setFieldValue(
+                            "agent_id",
+                            selectedOption ? String(selectedOption.id) : ""
+                          )
+                        }
+                        onBlur={() => setFieldTouched("agent_id", true)}
+                        getOptionLabel={(opt: any) => opt.name}
+                        getOptionValue={(opt: any) => String(opt.id)}
+                        options={agent}
+                        placeholder="Select Agent"
+                        isClearable
+                        isDisabled={userRole !== "Admin"}
+                        classNames={{
+                          control: ({ isFocused }) =>
+                            `!w-full !border-[0.4px] !rounded-[4px] !text-sm !leading-4 !font-medium !py-1.5 !px-1 !bg-black !shadow-sm ${
+                              isFocused
+                                ? "!border-primary-500"
+                                : "!border-gray-700"
+                            }`,
+                        }}
+                        styles={{
+                          menu: (base) => ({
+                            ...base,
+                            borderRadius: 4,
+                            backgroundColor: "#000",
+                          }),
+                          option: (base, { isFocused, isSelected }) => ({
+                            ...base,
+                            backgroundColor: isSelected
+                              ? "var(--primary-500)"
+                              : isFocused
+                              ? "#222"
+                              : "#000",
+                            color: "#fff",
+                            cursor:
+                              userRole === "Admin" ? "pointer" : "not-allowed",
+                          }),
+                          singleValue: (base) => ({ ...base, color: "#fff" }),
+                          placeholder: (base) => ({ ...base, color: "#999" }),
+                        }}
+                      />
+                      {touched.agent_id && errors.agent_id && (
+                        <p className="text-red-500 absolute top-[85px] text-xs">
+                          {String(errors.agent_id)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
-      {/* Conversation */}
-      <div className="w-full relative md:col-span-2">
-        <p className="text-white font-medium text-base leading-6 mb-2">
-          Conversation
-        </p>
-        <textarea
-          name="conversation"
-          value={values.conversation}
-          onChange={handleChange}
-          onBlur={() => setFieldTouched("conversation", true)}
-          placeholder="Enter conversation"
-          rows={4}
-          className="hover:shadow-hoverInputShadow focus-border-primary w-full border border-gray-700 rounded-[4px] text-sm leading-4 font-medium placeholder-gray-400 py-4 px-4 bg-black text-white"
-        />
-        {touched.conversation && errors.conversation && (
-          <p className="text-red-500 mt-1 text-xs">
-            {String(errors.conversation)}
-          </p>
-        )}
-      </div>
+                  {/* Conversation */}
+                  <div className="w-full relative md:col-span-2">
+                    <p className="text-white font-medium text-base leading-6 mb-2">
+                      Conversation
+                    </p>
+                    <textarea
+                      name="conversation"
+                      value={values.conversation}
+                      onChange={handleChange}
+                      onBlur={() => setFieldTouched("conversation", true)}
+                      placeholder="Enter conversation"
+                      rows={4}
+                      className="hover:shadow-hoverInputShadow focus-border-primary w-full border border-gray-700 rounded-[4px] text-sm leading-4 font-medium placeholder-gray-400 py-4 px-4 bg-black text-white"
+                    />
+                    {touched.conversation && errors.conversation && (
+                      <p className="text-red-500 mt-1 text-xs">
+                        {String(errors.conversation)}
+                      </p>
+                    )}
+                  </div>
 
-      {/* Submit */}
-      <div className="mt-10 w-full flex flex-col gap-y-4 md:flex-row justify-between items-center">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="py-[13px] px-[26px] bg-primary-500 rounded-[4px] text-base font-medium leading-6 text-white hover:text-dark cursor-pointer w-full text-center hover:bg-primary-700"
-        >
-          Update Activity History
-        </button>
-      </div>
-    </form>
-  )}
-</Formik>
+                  {/* Submit */}
+                  <div className="mt-10 w-full flex flex-col gap-y-4 md:flex-row justify-between items-center">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="py-[13px] px-[26px] bg-primary-500 rounded-[4px] text-base font-medium leading-6 text-white hover:text-dark cursor-pointer w-full text-center hover:bg-primary-700"
+                    >
+                      Update Activity History
+                    </button>
+                  </div>
+                </form>
+              )}
+            </Formik>
           </div>
         )}
         {isActivityFilter && (
